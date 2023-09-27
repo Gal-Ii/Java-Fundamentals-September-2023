@@ -1,0 +1,22 @@
+package BasicSyntax;
+
+import java.util.Scanner;
+
+public class EvenNumber {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+
+        boolean isOdd = false;
+while(!isOdd){
+    int n = Math.abs(Integer.parseInt(scanner.nextLine()));
+    if(n%2==0){
+        isOdd = true;
+        System.out.printf("The number is: %d", n);
+    }else {
+        System.out.println("Please write an even number." );
+    }
+}
+
+    }
+}
