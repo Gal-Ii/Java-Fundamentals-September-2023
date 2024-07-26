@@ -1,4 +1,4 @@
-package f05_Lists;
+package f08_Text_Processing_Exercise;
 
 import java.util.Scanner;
 
@@ -8,25 +8,24 @@ public class p07_String_Explosion {
 
         String input = scanner.nextLine();
 
-        StringBuilder manipulatedInput = new StringBuilder(input);
+        StringBuilder builder = new StringBuilder(input);
 
-        int totalStrength = 0;
+        int strength = 0;
 
 
-        for (int i = 0; i < manipulatedInput.length(); i++) {
-            char symbol = manipulatedInput.charAt(i);
+        for (int i = 0; i < builder.length(); i++) {
+            char symbol = builder.charAt(i);
 
-            if (symbol == '>') {
-                int explosionStrength = Integer.parseInt(manipulatedInput.charAt(i + 1) + "");
-                totalStrength += explosionStrength;
-                
+            if(symbol == '>'){
+                int digit = Integer.parseInt(builder.charAt(i+1) + "");
+                strength += digit;
 
-            } else if (symbol != '>' && totalStrength>0) {
-                manipulatedInput.deleteCharAt(i);
-                totalStrength--;
+            } else if ((symbol != '>') && (strength>0)) {
+                builder.deleteCharAt(i);
+                strength--;
                 i--;
             }
         }
-        System.out.println(manipulatedInput);
+        System.out.println(builder);
     }
 }
