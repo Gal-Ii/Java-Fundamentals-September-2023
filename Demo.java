@@ -1,55 +1,92 @@
-package f06_Object_And_Classes;
+package f10_Regex_Exercise;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Demo {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
 
+        int countMessages = Integer.parseInt(scanner.nextLine());
+        String regex = "@(?<planetName>[A-Za-z]+)[^@!:>-]*:(?<population>[0-9]+)[^@!:>-]*!(?<attackType>[AD])![^@!:>-]*->(?<soldiersCount>[0-9]+)";
+        Pattern pattern = Pattern.compile(regex);
 
-    public class P06_Students_Class {
-        private String firstName;
-        private String lastName;
-        private int age;
-        private String homeTown;
+        List<String> attackersPlanets = new ArrayList<>(); //атакуващи планети (attackType е "А")
+        List<String> destroyedPlanets = new ArrayList<>(); //унищожени планети (attackType е "D")
 
-        public P06_Students_Class(String firstName, String lastName, int age, String homeTown){
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.age = age;
-            this.homeTown = homeTown;
+        for (int messageCount = 1; messageCount <= countMessages; messageCount++) {
+            String encryptedMessage = scanner.nextLine(); //криптираното съобщение
+            String decryptedMessage = getDecryptedMessage(encryptedMessage); //декриптирано съобщение
+            //декриптирано: "PQ@Alderaa1:30000!A!->20000"
+            Matcher matcher = pattern.matcher(decryptedMessage);
+            //matcher: "@(?<planetName>Alderaa)[^@!:>-]*:(?<population>30000)[^@!:>-]*!(?<attackType>A)![^@!:>-]*->(?<soldiersCount>20000)";
+            if (matcher.find()) {
+                String planetName = matcher.group("planetName");
+                //int population = Integer.parseInt(matcher.group("population"));
+                String attackType = matcher.group("attackType");
+                //int soldiersCount = Integer.parseInt(matcher.group("soldiersCount"));
+
+                if (attackType.equals("A")) {
+                    //атакуваща планета
+                    attackersPlanets.add(planetName);
+                } else if (attackType.equals("D")) {
+                    //унищожена планета
+                    destroyedPlanets.add(planetName);
+                }
+            }
         }
 
-        public String getFirstName() {
-            return this.firstName;
+        System.out.println("Attacked planets: " + attackersPlanets.size());
+        Collections.sort(attackersPlanets); //сортирам планетите по име
+        attackersPlanets.forEach(planet -> System.out.println("-> " + planet));
+
+        System.out.println("Destroyed planets: " + destroyedPlanets.size());
+        Collections.sort(destroyedPlanets); //сортирам планетите по име
+        destroyedPlanets.forEach(planet -> System.out.println("-> " + planet));
+    }
+
+    //върне декриптираното съобщение
+    private static String getDecryptedMessage(String encryptedMessage) {
+        //1. брой на символите [s, t, a, r, S, T, A, R]
+        //криптирано съобщение: STCDoghudd4=63333$D$0A53333 -> 3 специални букви
+        int countLetters = getSpecialLettersCount(encryptedMessage);
+
+        //декриптиране -> контруираме ново съобщение
+        StringBuilder decryptedMessage = new StringBuilder();
+        //1. всеки символ от критпираното съобщение
+        //2. нов символ -> ascii на нов символ = ascii на текущия символ - countLetters
+        //3. добавяме нов символ
+        for (char symbol  : encryptedMessage.toCharArray()) {
+            char newSymbol = (char)(symbol - countLetters);
+            decryptedMessage.append(newSymbol);
         }
 
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
+        return decryptedMessage.toString();
+    }
+
+    //върне общия брой на буквите: [s, t, a, r, S, T, A, R]
+    private static int getSpecialLettersCount(String encryptedMessage) {
+        //криптирано съобщение: STCDoghudd4=63333$D$0A53333 -> 3 специални букви
+        int count = 0;
+        for (char symbol : encryptedMessage.toCharArray()) {
+            switch (symbol) {
+                case 's':
+                case 't':
+                case 'a':
+                case 'r':
+                case 'S':
+                case 'T':
+                case 'A':
+                case 'R':
+                    count++;
+                    break;
+            }
         }
 
-        public String getLastName() {
-            return this.lastName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-
-        public int getAge() {
-            return this.age;
-        }
-        public void setAge(int age) {
-            this.age = age;
-        }
-
-        public String getHomeTown() {
-            return this.homeTown;
-        }
-
-        public void setHomeTown(String homeTown) {
-            this.homeTown = homeTown;
-        }
-
-        public String getDetails(){
-            return String.format("%s %s is %d years old",this.firstName,this.lastName,this.age);
-        }
-
+        return count;
     }
 }
